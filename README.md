@@ -1,168 +1,66 @@
-# 🔍 YOLO Object Detection — FastAPI Workshop
+# 🚀 Dual YOLO Object Detection API (FastAPI)
 
-> **เว็บแอพลิเคชันสำหรับ Detect วัตถุในภาพถ่าย**  
-> ใช้ FastAPI เป็น Backend + YOLO (Ultralytics) เป็น AI Model  
-> Frontend ใช้ HTML/CSS/JavaScript + AJAX (Fetch API)
+ระบบตรวจจับวัตถุประสิทธิภาพสูงที่ทำงานผ่าน **FastAPI** และ **YOLO v8** โดยมาพร้อมกับอินเตอร์เฟซแบบ **Single-file HTML** ที่มีความสวยงาม ทันสมัย และติดตั้งง่าย
 
 ---
 
-## 📌 ภาพรวมโปรเจค
+## 🌟 จุดเด่นของโปรเจกต์ (Key Features)
 
-โปรเจคนี้เป็นเว็บแอพลิเคชันที่:
-1. ผู้ใช้อัพโหลดรูปภาพผ่านหน้าเว็บ (Browse File / Drag & Drop)
-2. ระบบส่งรูปไปประมวลผลด้วย **YOLO Model** ผ่าน **FastAPI** Backend
-3. YOLO ตรวจจับวัตถุในภาพ (Object Detection)
-4. ส่งผลลัพธ์กลับมาแสดงที่หน้าเว็บ:
-   - 🖼️ ภาพที่มี Bounding Box ล้อมรอบวัตถุ
-   - 📊 สรุปจำนวนวัตถุที่พบ
-   - 📋 Raw JSON Response ดิบ
-   - 📑 ตารางรายละเอียดแต่ละวัตถุ
+-   **Dual Model Support**: รองรับการทำงาน 2 รูปแบบแยกพอร์ตกัน (ชุดมาตรฐาน และ ชุดตรวจจับกากบาท)
+-   **Modern Glassmorphism UI**: หน้าเว็บออกแบบด้วยสไตล์กระจกใส (Glass) ทันสมัย ตอบสนองไว (Responsive)
+-   **Zero Static Dependencies**: โค้ด CSS และ JS ถูกรวมอยู่ในไฟล์ HTML เดียว ไม่ต้องมีโฟลเดอร์ static
+-   **Real-time Interaction**: ปรับค่า Confidence Threshold ผ่าน Slider และดูผลลัพธ์ได้ทันที
+-   **GPU Acceleration**: รองรับการคำนวณผ่าน NVIDIA GPU (CUDA) พร้อมระบบเช็คสถานะอัตโนมัติ
+-   **Self-contained Architecture**: โครงสร้างไฟล์สะอาด เรียบง่ายต่อการนำไปใช้งานหรือ Deploy
 
 ---
 
-## ⚙️ ขั้นตอนการติดตั้ง
+## 🏗️ โครงสร้างระบบ (Architecture)
 
-### 1. สร้าง Virtual Environment
+โปรเจกต์นี้แบ่งการทำงานออกเป็น 2 เซิร์ฟเวอร์หลัก:
+
+1.  **Standard Detection (Port 8000)**:
+    -   **Model**: ยูทิลิตี้ YOLOv8 Nano (`yolov8n.pt`)
+    -   **Target**: ตรวจจับวัตถุทั่วไป 80 ชนิด (คน, รถ, สัตว์, สิ่งของ)
+    -   **UI File**: `standard.html`
+
+2.  **Cross Detection (Port 8001)**:
+    -   **Model**: Custom Trained Model (`best_cross.pt`)
+    -   **Target**: เน้นการตรวจจับสัญลักษณ์กากบาทโดยเฉพาะ
+    -   **UI File**: `cross.html`
+
+---
+
+## 🛠️ การติดตั้งและใช้งาน (Installation & Usage)
+
+### 1. เตรียมสภาพแวดล้อม
 ```bash
-python -m venv venv
-
-# Windows
-venv\Scripts\activate
-
-# macOS/Linux
-source venv/bin/activate
-```
-
-### 2. ติดตั้ง Dependencies
-```bash
+# ติดตั้งไลบรารีที่จำเป็น
 pip install -r requirements.txt
 ```
 
-### 3. รันเซิร์ฟเวอร์
-```bash
-# วิธีที่ 1: รันผ่าน Python โดยตรง
-python main.py
+### 2. การรันเซิร์ฟเวอร์
+คุณสามารถเลือกโหมดที่ต้องการรันได้:
 
-# วิธีที่ 2: รันผ่าน uvicorn (พร้อม auto-reload)
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
-```
+-   **โหมดมาตรฐาน**:
+    ```bash
+    python main.py
+    ```
+    เข้าใช้งานได้ที่: [http://localhost:8000](http://localhost:8000)
 
-### 4. เปิดเบราว์เซอร์
-ไปที่ **http://localhost:8000**
-
-> 💡 **Swagger UI** (API Documentation): http://localhost:8000/docs
-
----
-
-## 📁 โครงสร้างไฟล์
-
-```
-FastAPI2/
-├── main.py              ← FastAPI Backend + YOLO Model
-├── requirements.txt     ← Python Dependencies
-├── README.md            ← เอกสารนี้
-├── static/
-│   ├── css/
-│   │   └── style.css    ← Stylesheet (Dark Theme)
-│   └── js/
-│       └── app.js       ← JavaScript AJAX Logic
-└── templates/
-    └── index.html       ← หน้าเว็บหลัก (Jinja2 Template)
-```
+-   **โหมดตรวจจับกากบาท**:
+    ```bash
+    python main_cross.py
+    ```
+    เข้าใช้งานได้ที่: [http://localhost:8001](http://localhost:8001)
 
 ---
 
-## 🔌 API Reference
-
-### `GET /` — หน้าเว็บหลัก
-แสดงหน้า HTML สำหรับอัพโหลดรูปภาพ
-
-### `POST /api/detect` — Detect วัตถุในภาพ
-**Request:**
-- Content-Type: `multipart/form-data`
-- Body: `file` = ไฟล์รูปภาพ (JPG, PNG, WEBP)
-
-**Response (JSON):**
-```json
-{
-    "success": true,
-    "annotated_image": "data:image/jpeg;base64,...",
-    "detections": [
-        {
-            "class_id": 0,
-            "label": "person",
-            "confidence": 0.9234,
-            "bbox": { "x1": 100, "y1": 200, "x2": 300, "y2": 500 }
-        }
-    ],
-    "total_objects": 3,
-    "summary": { "person": 2, "car": 1 },
-    "processing_time": 0.245,
-    "image_size": { "width": 1920, "height": 1080 },
-    "model_info": { "name": "yolov8n.pt", "device": "cuda:0" }
-}
-```
-
-### `GET /api/health` — Health Check
-ตรวจสอบสถานะ API และ GPU/CPU
+## 📑 คู่มือการใช้งานเชิงลึก
+สำหรับรายละเอียดการปรับแต่งพิกเซล, ขั้นตอนการอัพโหลด, หรือการแก้ไขปัญหาเบื้องต้น สามารถดูได้ที่ [RUN_GUIDE.md](RUN_GUIDE.md)
 
 ---
 
-## 💡 แนวคิดหลัก (Key Concepts)
-
-### 1. FastAPI
-- Python web framework ที่เร็วที่สุด (async support)
-- Auto-generate API documentation (Swagger UI)
-- Type checking ด้วย Pydantic
-
-### 2. YOLO (You Only Look Once)
-- Deep Learning model สำหรับ Object Detection
-- ใช้ Ultralytics library — `pip install ultralytics`
-- รองรับทั้ง GPU (CUDA) และ CPU
-- Auto-download model weights ครั้งแรกที่รัน
-
-### 3. AJAX (Fetch API)
-- ส่ง request ไปยัง API โดยไม่ต้อง reload หน้าเว็บ
-- ใช้ `FormData` สำหรับ file upload
-- **สำคัญ:** ห้าม set `Content-Type` header เองเมื่อใช้ FormData
-
-### 4. Base64 Encoding
-- แปลงภาพเป็น text string เพื่อส่งผ่าน JSON
-- ใช้ `data:image/jpeg;base64,...` สำหรับแสดงใน `<img>` tag
-
----
-
-## 🔧 การปรับแต่ง
-
-### เปลี่ยน YOLO Model
-```python
-# ใน main.py — เปลี่ยน MODEL_PATH
-MODEL_PATH = "yolov8s.pt"    # Small (แม่นกว่า nano)
-MODEL_PATH = "yolov8m.pt"    # Medium
-MODEL_PATH = "yolov8l.pt"    # Large
-MODEL_PATH = "best.pt"       # Custom trained model
-```
-
-### ปรับ Confidence Threshold
-```python
-# ใน main.py — เพิ่ม conf parameter
-results = model.predict(image, verbose=False, conf=0.5)  # ขั้นต่ำ 50%
-```
-
-### เพิ่ม CORS (Cross-Origin)
-```python
-from fastapi.middleware.cors import CORSMiddleware
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-```
-
----
-
-## 📝 License
-
-สำหรับการศึกษาเท่านั้น — URU Master Program 2568
+## 🤝 จัดทำโดย
+**URU Master Program 2568**
+Uttaradit Rajabhat University
